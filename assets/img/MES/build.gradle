@@ -1,0 +1,36 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClassName = 'mes.MES'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xdoclint:none', '-Xlint:none', '-nowarn']
+}
+
+// Custom task to create jar including dependencies
+task jarWithDependency (type: Jar){
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from {
+        configurations.compile.collect {it.isDirectory() ? it: zipTree(it)}
+    } with jar
+}
